@@ -25,40 +25,44 @@
         android:name="com.example.android.camera2.basic.fragments.PermissionsFragment"
         android:label="Permissions" >
 
+<!--        <action-->
+<!--            android:id="@+id/action_permissions_to_selector"-->
+<!--            app:destination="@id/selector_fragment"-->
+<!--            app:popUpTo="@id/permissions_fragment"-->
+<!--            app:popUpToInclusive="true" />-->
         <action
             android:id="@+id/action_permissions_to_selector"
-            app:destination="@id/selector_fragment"
+            app:destination="@id/camera_fragment"
             app:popUpTo="@id/permissions_fragment"
             app:popUpToInclusive="true" />
-
     </fragment>
 
-    <fragment
-        android:id="@+id/selector_fragment"
-        android:name="com.example.android.camera2.basic.fragments.SelectorFragment"
-        android:label="Selector" >
+<!--    <fragment-->
+<!--        android:id="@+id/selector_fragment"-->
+<!--        android:name="com.example.android.camera2.basic.fragments.SelectorFragment"-->
+<!--        android:label="Selector" >-->
 
-        <action
-            android:id="@+id/action_selector_to_camera"
-            app:launchSingleTop="true"
-            app:destination="@id/camera_fragment" />
+<!--        <action-->
+<!--            android:id="@+id/action_selector_to_camera"-->
+<!--            app:launchSingleTop="true"-->
+<!--            app:destination="@id/camera_fragment" />-->
 
-    </fragment>
+<!--    </fragment>-->
 
     <fragment
         android:id="@+id/camera_fragment"
         android:name="com.example.android.camera2.basic.fragments.CameraFragment"
         android:label="Camera" >
 
-        <argument
-            android:name="camera_id"
-            app:argType="string"
-            app:nullable="false"/>
+<!--        <argument-->
+<!--            android:name="camera_id"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="false"/>-->
 
-        <argument
-            android:name="pixel_format"
-            app:argType="integer"
-            app:nullable="false"/>
+<!--        <argument-->
+<!--            android:name="pixel_format"-->
+<!--            app:argType="integer"-->
+<!--            app:nullable="false"/>-->
 
         <action
             android:id="@+id/action_camera_to_permissions"
@@ -66,32 +70,32 @@
             app:popUpTo="@id/camera_fragment"
             app:popUpToInclusive="true"/>
 
-        <action
-            android:id="@+id/action_camera_to_jpeg_viewer"
-            app:launchSingleTop="true"
-            app:destination="@id/image_viewer_fragment" />
+<!--        <action-->
+<!--            android:id="@+id/action_camera_to_jpeg_viewer"-->
+<!--            app:launchSingleTop="true"-->
+<!--            app:destination="@id/image_viewer_fragment" />-->
 
     </fragment>
 
-    <fragment
-        android:id="@+id/image_viewer_fragment"
-        android:name="com.example.android.camera2.basic.fragments.ImageViewerFragment"
-        android:label="Image Viewer" >
+<!--    <fragment-->
+<!--        android:id="@+id/image_viewer_fragment"-->
+<!--        android:name="com.example.android.camera2.basic.fragments.ImageViewerFragment"-->
+<!--        android:label="Image Viewer" >-->
 
-        <argument
-            android:name="file_path"
-            app:argType="string"
-            app:nullable="false"/>
+<!--        <argument-->
+<!--            android:name="file_path"-->
+<!--            app:argType="string"-->
+<!--            app:nullable="false"/>-->
 
-        <argument
-            android:name="orientation"
-            app:argType="integer"
-            android:defaultValue="0" />
+<!--        <argument-->
+<!--            android:name="orientation"-->
+<!--            app:argType="integer"-->
+<!--            android:defaultValue="0" />-->
 
-        <argument
-            android:name="depth"
-            app:argType="boolean"
-            android:defaultValue="false" />
-    </fragment>
+<!--        <argument-->
+<!--            android:name="depth"-->
+<!--            app:argType="boolean"-->
+<!--            android:defaultValue="false" />-->
+<!--    </fragment>-->
 
 </navigation>

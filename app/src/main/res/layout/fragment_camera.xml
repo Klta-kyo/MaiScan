@@ -26,15 +26,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="30dp"
         android:text="bilibili:@Klta_卡"
-        android:textSize="8sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="@android:color/black"
+        android:textSize="8sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_change_cam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="相机切换" />
+
+            <Button
+                android:id="@+id/btn_change_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="数据流切换" />
+        </LinearLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -223,7 +243,9 @@
                     android:text="DS"
                     android:textColor="@android:color/black" />
             </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
 
     <View

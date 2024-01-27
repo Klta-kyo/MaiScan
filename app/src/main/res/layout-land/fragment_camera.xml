@@ -82,5 +82,18 @@
         android:layout_width="240dp"
         android:layout_height="27dp" />
 
+    <Button
+        android:id="@+id/btn_change_cam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="相机切换" />
+
+    <Button
+        android:id="@+id/btn_change_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="数据流切换" />
 
 </FrameLayout>

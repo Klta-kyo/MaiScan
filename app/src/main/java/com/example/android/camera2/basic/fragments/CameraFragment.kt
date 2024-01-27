@@ -34,6 +34,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.Surface
 import android.view.SurfaceHolder
@@ -41,6 +42,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.core.graphics.blue
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.green
@@ -51,9 +53,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import com.example.android.camera.utils.GenericListAdapter
 import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera.utils.computeExifOrientation
 import com.example.android.camera.utils.getPreviewOutputSize
@@ -91,7 +96,7 @@ class CameraFragment : Fragment() {
     private val fragmentCameraBinding get() = _fragmentCameraBinding!!
 
     /** AndroidX navigation arguments */
-    private val args: CameraFragmentArgs by navArgs()
+//    private val args: CameraFragmentArgs by navArgs()
 
     /** Host's navigation controller */
     private val navController: NavController by lazy {
@@ -105,10 +110,10 @@ class CameraFragment : Fragment() {
     }
 
     /** [CameraCharacteristics] corresponding to the provided Camera ID */
-    private val characteristics: CameraCharacteristics by lazy {
-        cameraManager.getCameraCharacteristics(args.cameraId)
-    }
-
+//    private var characteristics: CameraCharacteristics by lazy {
+//        cameraManager.getCameraCharacteristics(args.cameraId)
+//    }
+    private lateinit var characteristics: CameraCharacteristics
     /** Readers used as buffers for camera still shots */
     private lateinit var imageReader: ImageReader
 
@@ -121,7 +126,7 @@ class CameraFragment : Fragment() {
     /** [Handler] corresponding to [cameraThread] */
     private val cameraHandler = Handler(cameraThread.looper)
     private val imageQueue = ArrayBlockingQueue<Image>(IMAGE_BUFFER_SIZE)
-
+    private var sizeNumOfCam: Int = 0
     /** Performs recording animation of flashing screen */
     private val animationTask: Runnable by lazy {
         Runnable {
@@ -148,11 +153,81 @@ class CameraFragment : Fragment() {
     /** Live data listener for changes in the device orientation relative to the camera */
     private lateinit var relativeOrientation: OrientationLiveData
     private var curImgWidth: Int = 0
+    private lateinit var cameraList: List<FormatItem>
+    private var curCam: Int = 0
+    private data class FormatItem(val title: String, val cameraId: String, val format: Int)
+    private lateinit var size: Size
+    private fun lensOrientationString(value: Int) = when(value) {
+        CameraCharacteristics.LENS_FACING_BACK -> "Back"
+        CameraCharacteristics.LENS_FACING_FRONT -> "Front"
+        CameraCharacteristics.LENS_FACING_EXTERNAL -> "External"
+        else -> "Unknown"
+    }
+    private fun enumerateCameras(cameraManager: CameraManager): List<FormatItem> {
+        val availableCameras: MutableList<FormatItem> = mutableListOf()
+
+        // Get list of all compatible cameras
+        val cameraIds = cameraManager.cameraIdList.filter {
+            val characteristics = cameraManager.getCameraCharacteristics(it)
+            val capabilities = characteristics.get(
+                    CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)
+            capabilities?.contains(
+                    CameraMetadata.REQUEST_AVAILABLE_CAPABILITIES_BACKWARD_COMPATIBLE) ?: false
+        }
+
+
+        // Iterate over the list of cameras and return all the compatible ones
+        cameraIds.forEach { id ->
+            val characteristics = cameraManager.getCameraCharacteristics(id)
+            val orientation = lensOrientationString(
+                    characteristics.get(CameraCharacteristics.LENS_FACING)!!)
+
+            // Query the available capabilities and output formats
+            val capabilities = characteristics.get(
+                    CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)!!
+            val outputFormats = characteristics.get(
+                    CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!.outputFormats
+
+            // All cameras *must* support JPEG output so we don't need to check characteristics
+            availableCameras.add(FormatItem("$orientation ($id)", id, ImageFormat.JPEG))
+
+
+            // Return cameras that support RAW capability
+//                if (capabilities.contains(
+//                                CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW) &&
+//                        outputFormats.contains(ImageFormat.RAW_SENSOR)) {
+//                    availableCameras.add(FormatItem(
+//                            "$orientation RAW ($id)", id, ImageFormat.RAW_SENSOR))
+//                }
+
+
+
+            // Return cameras that support JPEG DEPTH capability
+//                if (capabilities.contains(
+//                            CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_DEPTH_OUTPUT) &&
+//                        outputFormats.contains(ImageFormat.DEPTH_JPEG)) {
+//                    availableCameras.add(FormatItem(
+//                            "$orientation DEPTH ($id)", id, ImageFormat.DEPTH_JPEG))
+//                }
+        }
+
+        return availableCameras
+    }
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
+
+        val cameraManager =
+                requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
+
+        cameraList = enumerateCameras(cameraManager)
+        curCam = 0
+        characteristics = cameraManager.getCameraCharacteristics(cameraList.get(curCam).cameraId)
+        val layoutId = android.R.layout.simple_list_item_1
+
+
         val lines = object {}.javaClass.getResourceAsStream("music_data.json")?.bufferedReader()?.readLines()
 
         _fragmentCameraBinding = FragmentCameraBinding.inflate(inflater, container, false)
@@ -242,13 +317,61 @@ class CameraFragment : Fragment() {
                     characteristics,
                     SurfaceHolder::class.java
                 )
+
                 Log.d("TAG", "View finder size: ${fragmentCameraBinding.viewFinder.width} x ${fragmentCameraBinding.viewFinder.height}")
                 Log.d("TAG", "Selected preview size: $previewSize")
 
                 Log.d("TAG", "View finder size: ${fragmentCameraBinding.viewFinder.width} x ${fragmentCameraBinding.viewFinder.height}")
 
                 // To ensure that size is set, initialize camera in the view's thread
-                view.post { initializeCamera() }
+                view.post {
+//                    size = characteristics.get(
+//                            CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+//                            .getOutputSizes(cameraList[curCam].format).maxByOrNull { it.height * it.width }!!
+                    size = characteristics.get(
+                            CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+                            .getOutputSizes(cameraList[curCam].format)[2]!!
+                    initializeCamera()
+                    fragmentCameraBinding.btnChangeSize.setOnClickListener {
+                        fragmentCameraBinding.seekBarFrame.progress = 0
+                        imageReader.close()
+                        session.close()
+                        camera.close()
+                        sizeNumOfCam += 1
+                        var s = characteristics.get(
+                                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+                                .getOutputSizes(cameraList[curCam].format)
+                        if(sizeNumOfCam>=s.size){
+                            sizeNumOfCam = 0
+                        }
+                        fragmentCameraBinding.viewFinder.holder.setFixedSize(s.get(sizeNumOfCam).width,s.get(sizeNumOfCam).height)
+                        size = characteristics.get(
+                                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+                                .getOutputSizes(cameraList[curCam].format).get(sizeNumOfCam)
+                        initializeCamera()
+                    }
+                    fragmentCameraBinding.btnChangeCam.setOnClickListener {
+                        fragmentCameraBinding.seekBarFrame.progress = 0
+                        imageReader.close()
+                        session.close()
+                        camera.close()
+                        curCam += 1
+                        sizeNumOfCam = 0
+                        if(curCam>=cameraList.size){
+                            curCam = 0
+                        }
+                        var s = characteristics.get(
+                                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+                                .getOutputSizes(cameraList[curCam].format)
+
+                        characteristics = cameraManager.getCameraCharacteristics(cameraList.get(curCam).cameraId)
+                        fragmentCameraBinding.viewFinder.holder.setFixedSize(s.get(sizeNumOfCam).width,s.get(sizeNumOfCam).height)
+                        size = characteristics.get(
+                                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
+                                .getOutputSizes(cameraList[curCam].format).maxByOrNull { it.width*it.height }!!
+                        initializeCamera()
+                    }
+                }
             }
         })
         fragmentCameraBinding.seekBarFrame.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -313,19 +436,21 @@ class CameraFragment : Fragment() {
     private fun initializeCamera() = lifecycleScope.launch(Dispatchers.Main) {
         // Open the selected camera
 
-        camera = openCamera(cameraManager, args.cameraId, cameraHandler)
+        camera = openCamera(cameraManager, cameraList[curCam].cameraId, cameraHandler)
 
         // Initialize an image reader which will be used to capture still photos
-        val size = characteristics.get(
-                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
-                .getOutputSizes(args.pixelFormat).maxByOrNull { it.height * it.width }!!
+
+
+        //解决华为或vivo手机出现的图像变扁的情况
+
+        Log.d("TAG","---xxa::${size.width}, ${size.height}")
+
         imageReader = ImageReader.newInstance(
-                size.width, size.height, args.pixelFormat, IMAGE_BUFFER_SIZE)
+                size.width, size.height, cameraList[curCam].format, IMAGE_BUFFER_SIZE)
 
         val params: ViewGroup.LayoutParams = fragmentCameraBinding.viewFinder.layoutParams
-        Log.d("TAG","------a::${requireContext().resources.displayMetrics.widthPixels*size.width/size.height}, ${requireContext().resources.displayMetrics.heightPixels*0.6}")
         if(requireContext().resources.displayMetrics.widthPixels*size.width/size.height>requireContext().resources.displayMetrics.heightPixels*0.6){
-            Log.d("TAG","------a::${requireContext().resources.displayMetrics.heightPixels.times(0.6).toInt()}, ${params.height/size.width*size.height}")
+            Log.d("TAG","------a::${requireContext().resources.displayMetrics.heightPixels.times(0.6).toInt()}, ${params.height*size.height/size.width}")
 
             params.height = requireContext().resources.displayMetrics.heightPixels.times(0.6).toInt()
             params.width = params.height*size.height/size.width
@@ -373,7 +498,7 @@ class CameraFragment : Fragment() {
                     var bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.size)
                     var seek  = fragmentCameraBinding.imgFrame.layoutParams.width
                     Log.d("TAG", "Result receivedfffff: ${bitmap.height}.")
-                    var width = (bitmap.height*seek/requireContext().resources.displayMetrics.widthPixels).toInt()
+                    var width = (bitmap.height*seek/params.width).toInt()
 
                     var bitmap2 = Bitmap.createBitmap(bitmap,((bitmap.width-width)/2).toInt(),((bitmap.height-width)/2).toInt(),width,width)
 
@@ -703,11 +828,11 @@ class CameraFragment : Fragment() {
                         }
 
                         // Compute EXIF orientation metadata
-                        val rotation = relativeOrientation.value ?: 0
-                        val mirrored = characteristics.get(CameraCharacteristics.LENS_FACING) ==
-                                CameraCharacteristics.LENS_FACING_FRONT
-                        val exifOrientation = computeExifOrientation(rotation, mirrored)
-
+//                        val rotation = relativeOrientation.value ?: 0
+//                        val mirrored = characteristics.get(CameraCharacteristics.LENS_FACING) ==
+//                                CameraCharacteristics.LENS_FACING_FRONT
+//                        val exifOrientation = computeExifOrientation(rotation, mirrored)
+                        val exifOrientation = computeExifOrientation(0,false)
                         // Build the result and resume progress
                         cont.resume(CombinedCaptureResult(
                                 image, result, exifOrientation, imageReader.imageFormat))
