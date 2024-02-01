@@ -69,15 +69,36 @@
             app:destination="@id/permissions_fragment"
             app:popUpTo="@id/camera_fragment"
             app:popUpToInclusive="true"/>
-
-<!--        <action-->
-<!--            android:id="@+id/action_camera_to_jpeg_viewer"-->
-<!--            app:launchSingleTop="true"-->
-<!--            app:destination="@id/image_viewer_fragment" />-->
-
+        <action
+            android:id="@+id/action_camera_fragment_to_intro_fragment"
+            app:destination="@id/intro_fragment" />
     </fragment>
-
-<!--    <fragment-->
+    <fragment
+        android:id="@+id/gallary_fragment"
+        android:name="com.example.android.camera2.basic.fragments.GalleryFragment"
+        android:label="Gallery" >
+        <action
+            android:id="@+id/action_gallary_fragment_to_intro_fragment"
+            app:destination="@id/intro_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/intro_fragment"
+        android:name="com.example.android.camera2.basic.fragments.IntroFragment"
+        android:label="Intro" >
+    </fragment>
+    <fragment
+        android:id="@+id/textFragment"
+        android:name="com.example.android.camera2.basic.fragments.TextFragment"
+        android:label="TextFragment" >
+        <action
+            android:id="@+id/action_textFragment_to_intro_fragment"
+            app:destination="@id/intro_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.android.camera2.basic.fragments.AboutFragment"
+        android:label="AboutFragment" />
+    <!--    <fragment-->
 <!--        android:id="@+id/image_viewer_fragment"-->
 <!--        android:name="com.example.android.camera2.basic.fragments.ImageViewerFragment"-->
 <!--        android:label="Image Viewer" >-->

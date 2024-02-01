@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/darker_gray">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btn_frag_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="changeFrag_cam"
+            android:text="相机"
+            tools:ignore="UsingOnClickInXml"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/btn_frag_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="changeFrag_gallery"
+            android:text="图片"
+            tools:ignore="UsingOnClickInXml"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/btn_frag_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="changeFrag_text"
+            android:text="文字"
+            tools:ignore="UsingOnClickInXml"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/btn_frag_about"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="changeFrag_about"
+            android:text="关于"
+            android:textColor="@android:color/black"
+            tools:ignore="UsingOnClickInXml" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        app:barrierDirection="top" />
+
+
+</LinearLayout>

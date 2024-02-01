@@ -21,16 +21,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="30dp"
-        android:text="bilibili:@Klta_卡"
-        android:textColor="@android:color/black"
-        android:textSize="8sp" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -39,21 +29,49 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_change_cam"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="相机切换" />
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal">-->
 
-            <Button
-                android:id="@+id/btn_change_size"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="数据流切换" />
+<!--                <Button-->
+<!--                    android:id="@+id/btn_frag_camera"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:onClick="changeFrag_cam"-->
+<!--                    android:text="相机"-->
+<!--                    tools:ignore="UsingOnClickInXml"-->
+<!--                    android:textColor="@android:color/black" />-->
+
+<!--                <Button-->
+<!--                    android:id="@+id/btn_frag_gallery"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:onClick="changeFrag_gallery"-->
+<!--                    android:text="图片"-->
+<!--                    tools:ignore="UsingOnClickInXml"-->
+<!--                    android:textColor="@android:color/black" />-->
+
+<!--                <Button-->
+<!--                    android:id="@+id/btn_frag_text"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:onClick="changeFrag_text"-->
+<!--                    android:text="文字"-->
+<!--                    tools:ignore="UsingOnClickInXml"-->
+<!--                    android:textColor="@android:color/black" />-->
+
+<!--            </LinearLayout>-->
+
+            <include
+                layout="@layout/navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
         <FrameLayout
@@ -89,6 +107,29 @@
                 android:contentDescription="@string/capture"
                 android:scaleType="fitCenter" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_change_cam"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="相机切换"
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/btn_change_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="数据流切换"
+                    android:textColor="@android:color/black" />
+
+            </LinearLayout>
+
             <SeekBar
                 android:id="@+id/seek_bar_frame"
                 android:layout_width="224dp"
@@ -100,149 +141,176 @@
 
         </FrameLayout>
 
-        <androidx.cardview.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/imageView"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="5dp"
-                        android:rotation="90"
-                        app:srcCompat="@drawable/ic_launcher" />
-
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginBottom="0dp" />
-
-
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/divider4"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:background="?android:attr/listDivider" />
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center|center"
-                    android:layout_marginLeft="50dp"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/imageShow1"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
-                        android:background="@drawable/bg_border1"
-                        android:padding="6dp"
-                        app:srcCompat="@drawable/ic_launcher" />
+                        android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/imageShow2"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        <ImageView
+                            android:id="@+id/imageView"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="5dp"
+                            android:rotation="0"
+                            app:srcCompat="@drawable/def_resize50" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="bottom|center"
+                            android:layout_marginBottom="0dp" />
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/divider4"
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
-                        android:background="@drawable/bg_border1"
-                        android:padding="0dp"
-                        app:srcCompat="@drawable/ic_launcher" />
+                        android:background="?android:attr/listDivider" />
 
-                    <ImageView
-                        android:id="@+id/imageShow3"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:background="@drawable/bg_border1"
-                        android:padding="0dp"
-                        app:srcCompat="@drawable/ic_launcher" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|center"
+                        android:layout_marginLeft="50dp"
+                        android:orientation="horizontal"
+                        android:id="@+id/res_layout">
 
+                        <ImageView
+                            android:id="@+id/imageShow1"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:background="@drawable/bg_border1"
+                            android:padding="3dp"
+                            app:srcCompat="@drawable/def_resize50" />
+
+                        <ImageView
+                            android:id="@+id/imageShow2"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:background="@drawable/bg_border1"
+                            android:padding="0dp"
+                            app:srcCompat="@drawable/def_resize50" />
+
+                        <ImageView
+                            android:id="@+id/imageShow3"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:background="@drawable/bg_border1"
+                            android:padding="0dp"
+                            app:srcCompat="@drawable/def_resize50" />
+
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-        </androidx.cardview.widget.CardView>
-
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/selectedImg"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center_horizontal|center_vertical"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                app:srcCompat="@drawable/ic_launcher" />
-
-            <LinearLayout
+            <View
+                android:id="@+id/divider2"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
 
-                <TextView
-                    android:id="@+id/textViewTitle"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center"
-                    android:layout_marginBottom="0px"
-                    android:text="Title"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp" />
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/textViewVersion"
-                    android:layout_width="200dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center"
-                    android:layout_marginBottom="0px"
-                    android:text="Version"
-                    android:textColor="@android:color/black" />
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/textViewDs"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center"
-                    android:layout_marginBottom="0px"
-                    android:text="DS"
-                    android:textColor="@android:color/black" />
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/selectedImg"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        app:srcCompat="@drawable/def" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textViewTitle"
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_marginBottom="0px"
+                            android:text="Title"
+                            android:textColor="@android:color/black"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:id="@+id/textViewVersion"
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_marginBottom="0px"
+                            android:text="Version"
+                            android:textColor="@android:color/black" />
+
+                        <TextView
+                            android:id="@+id/textViewDs"
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_marginBottom="0px"
+                            android:text="DS"
+                            android:textColor="@android:color/black" />
+
+                        <Button
+                            android:id="@+id/btn_to_detail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="详情"
+                            android:textColor="@android:color/black" />
+
+                        <View
+                            android:id="@+id/divider"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="40dp"
+                            android:background="?android:attr/listDivider" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </ScrollView>
 
         </LinearLayout>
 
@@ -253,7 +321,6 @@
         android:layout_width="match_parent"
         android:layout_height="201dp"
         android:foreground="@android:color/transparent" />
-
 
 
 

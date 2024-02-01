@@ -23,6 +23,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.Navigation
 import androidx.lifecycle.lifecycleScope
 import com.example.android.camera2.basic.R
@@ -63,8 +64,14 @@ class PermissionsFragment : Fragment() {
     private fun nativateToCamera()
     {
         lifecycleScope.launchWhenStarted {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
-                    PermissionsFragmentDirections.actionPermissionsToSelector())
+            var transaction: FragmentTransaction? = null
+            transaction = requireActivity().supportFragmentManager.beginTransaction()
+            val fragment1 = CameraFragment()
+            transaction.replace(R.id.fragment_container, fragment1)
+            transaction.commit()
+
+//            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
+//                    PermissionsFragmentDirections.actionPermissionsToSelector())
         }
     }
 

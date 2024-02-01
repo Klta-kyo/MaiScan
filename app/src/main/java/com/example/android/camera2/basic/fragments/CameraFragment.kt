@@ -16,15 +16,15 @@
 
 package com.example.android.camera2.basic.fragments
 
-import MatDecode
+
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ImageFormat
-import android.graphics.PorterDuff
 import android.graphics.RectF
 import android.hardware.camera2.*
 import android.media.Image
@@ -41,42 +41,39 @@ import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.SeekBar
-import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.blue
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.example.android.camera.utils.GenericListAdapter
 import com.example.android.camera.utils.OrientationLiveData
 import com.example.android.camera.utils.computeExifOrientation
 import com.example.android.camera.utils.getPreviewOutputSize
 import com.example.android.camera2.basic.CameraActivity
 import com.example.android.camera2.basic.R
 import com.example.android.camera2.basic.databinding.FragmentCameraBinding
+import com.github.dhaval2404.imagepicker.ImagePicker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import org.opencv.core.MatOfKeyPoint
-import java.io.BufferedReader
 import java.io.Closeable
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStreamReader
-import java.io.ObjectOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -88,8 +85,6 @@ import kotlin.coroutines.suspendCoroutine
 
 
 class CameraFragment : Fragment() {
-    var infoMap : MutableMap<Int,JSONObject> = LinkedHashMap()
-    var imgMap : MutableMap<Int,MatOfKeyPoint> = LinkedHashMap()
     /** Android ViewBinding */
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
 
@@ -219,6 +214,8 @@ class CameraFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
 
+
+
         val cameraManager =
                 requireContext().getSystemService(Context.CAMERA_SERVICE) as CameraManager
 
@@ -237,62 +234,14 @@ class CameraFragment : Fragment() {
 //        descriptor3 = SIFTUtils.computeDescriptors(bitmap3)
 //        val bitmap4 = BitmapFactory.decodeResource(resources, R.drawable.img3)
 //        descriptor4 = SIFTUtils.computeDescriptors(bitmap4)
-        context?.let { readMusicData(it) }
         return fragmentCameraBinding.root
     }
-    inline fun readMusicData(context: Context){
-        var br: BufferedReader? = null
-        var fileName = "music_data.json"
-        try {
-            br = BufferedReader(InputStreamReader(context.resources.assets.open(fileName)))
-            var line: String? = null
-            val sb = StringBuilder()
-            while (br.readLine().also { line = it } != null){
-                sb.append(line)
-            }
-            br.close()
-            var json = sb.toString()
-            Log.d("TAG","---json: $json")
-            val codeList: JSONArray = JSON.parseArray(json)
-//            var infoMap : MutableMap<Int,JSONObject> = LinkedHashMap()
-//            var imgMap : MutableMap<Int,MatOfKeyPoint> = LinkedHashMap()
-//            for(i in 0 until 30){
-            for(i in 0 until codeList.size){
-                val musicItem: JSONObject = codeList.getJSONObject(i)
-                val id : Int = (musicItem.get("id") as String).toInt()
-                var zeros = ""
-                var x = id
-                while(x<=9999){
-                    x *= 10
-                    zeros += "0"
-                }
-//                val bitmap = BitmapFactory.decodeStream(context.resources.assets.open("source_resize50/img${zeros}${id}.png"))
-//                if(bitmap==null){
-//                    Log.d("TAG","error:id:::::::"+musicItem.get("id") as String)
-//                    continue
-//                }
 
-//                var descriptor: MatOfKeyPoint = SIFTUtils.computeDescriptors(bitmap)
-//                MatDecode().save("img${zeros}${id}.dat",descriptor)
-//                MatDecode().save(context.filesDir.path+"/img${zeros}${id}.dat",descriptor)
-                val descriptor: MatOfKeyPoint? = MatDecode().load(context.resources.assets.open("matSource/img${zeros}${id}.dat"))
-                infoMap[id] = musicItem
-                imgMap[id] = descriptor?:MatOfKeyPoint()
-                Log.d("TAG","123123:"+context.filesDir.path+"/img${zeros}${id}.dat")
-                Log.d("TAG","id:::::::"+musicItem.get("id") as String)
-            }
-            Log.d("TAG","size:${codeList.size},${infoMap.size}")
-            Log.d("TAG","maps:${infoMap.size},${imgMap.size}")
 
-        } catch (e: Exception) {
-            Log.d("TAG","---e: "+e.toString())
-        }finally {
-            br?.close()
-        }
-    }
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         fragmentCameraBinding.captureButton.setOnApplyWindowInsetsListener { v, insets ->
             v.translationX = (-insets.systemWindowInsetRight).toFloat()
             v.translationY = (-insets.systemWindowInsetBottom).toFloat()
@@ -330,7 +279,7 @@ class CameraFragment : Fragment() {
 //                            .getOutputSizes(cameraList[curCam].format).maxByOrNull { it.height * it.width }!!
                     size = characteristics.get(
                             CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
-                            .getOutputSizes(cameraList[curCam].format)[2]!!
+                            .getOutputSizes(cameraList[curCam].format).maxByOrNull { it.height*it.width }!!
                     initializeCamera()
                     fragmentCameraBinding.btnChangeSize.setOnClickListener {
                         fragmentCameraBinding.seekBarFrame.progress = 0
@@ -415,16 +364,76 @@ class CameraFragment : Fragment() {
         canvas1.drawBitmap(bitmap1,null,rect1,null)
         target.setImageBitmap(show1)
     }
-    fun updateInfo(id: Int, json: JSONObject){
+    fun updateInfo(id: Int, json: JSONObject, chartJson: JSONArray?){
+        var basic = json.get("basic_info") as JSONObject
 //        fragmentCameraBinding.textView?.text =
 //                "result1: ${maxId1},Name: ${maxJson1?.get("title")},Acc:${max1},Ds: ${maxJson1?.get("ds")}\n"
-
-        fragmentCameraBinding.textViewTitle?.text = json.get("title") as String
-        fragmentCameraBinding.textViewDs?.text = "定数："+json.get("ds").toString()
-        fragmentCameraBinding.textViewVersion?.text = json.get("type") as String
-        fragmentCameraBinding.selectedImg?.let { updateImage(id, it,100) }
-
+        fragmentCameraBinding.textViewTitle.text = json.get("title") as String
+        var ds:String = "官方定数："
+        for(j in (json.get("ds") as JSONArray)){
+            ds+= String.format("%.2f",j.toString().toFloat())+"  "
+        }
+        ds+="\n"
+        if(chartJson!=null){
+            ds += "拟合定数："
+            for(j in chartJson){
+                if((j as JSONObject).contains("fit_diff")){
+                    ds+= String.format("%.2f",(j as JSONObject).get("fit_diff").toString().toFloat())+"  "
+                }else{
+                    ds+="  "
+                }
+            }
+        }else{
+            ds += "未有拟合定数记录！"
+        }
+        fragmentCameraBinding.textViewDs.text = ds
+        fragmentCameraBinding.textViewVersion.text = basic.get("from").toString()
+        fragmentCameraBinding.selectedImg.let { updateImage(id, it,100)}
+        fragmentCameraBinding.btnToDetail.setOnClickListener {
+            var transaction: FragmentTransaction? = null
+            transaction = requireActivity().supportFragmentManager.beginTransaction()
+            val fragment1 = IntroFragment()
+            val bundle = Bundle()
+            bundle.putInt("id", id)
+            bundle.putString("from", "camera")
+            fragment1.arguments = bundle
+            transaction.replace(R.id.fragment_container, fragment1)
+            transaction.commit()
+        }
+        fragmentCameraBinding.selectedImg.setOnClickListener {
+            var transaction2: FragmentTransaction? = null
+            transaction2 = requireActivity().supportFragmentManager.beginTransaction()
+            val fragment1 = IntroFragment()
+            val bundle = Bundle()
+            bundle.putInt("id", id)
+            bundle.putString("from", "camera")
+            fragment1.arguments = bundle
+            transaction2.replace(R.id.fragment_container, fragment1)
+            transaction2.commit()
+        }
     }
+
+
+
+
+    private val startForProfileImageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+
+            if (resultCode == Activity.RESULT_OK) {
+                //Image Uri will not be null for RESULT_OK
+                val fileUri = data?.data!!
+
+                Log.d("TAG","aaa;$fileUri")
+//                mProfileUri = fileUri
+//                imgProfile.setImageURI(fileUri)
+            } else if (resultCode == ImagePicker.RESULT_ERROR) {
+                Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+            }
+        }
     /**
      * Begin all camera operations in a coroutine in the main thread. This function:
      * - Opens the camera
@@ -432,7 +441,7 @@ class CameraFragment : Fragment() {
      * - Starts the preview by dispatching a repeating capture request
      * - Sets up the still image capture listeners
      */
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private fun initializeCamera() = lifecycleScope.launch(Dispatchers.Main) {
         // Open the selected camera
 
@@ -440,8 +449,6 @@ class CameraFragment : Fragment() {
 
         // Initialize an image reader which will be used to capture still photos
 
-
-        //解决华为或vivo手机出现的图像变扁的情况
 
         Log.d("TAG","---xxa::${size.width}, ${size.height}")
 
@@ -485,7 +492,6 @@ class CameraFragment : Fragment() {
 
         session.setRepeatingRequest(captureRequest.build(), null, cameraHandler)
 
-
         fragmentCameraBinding.captureButton.setOnClickListener {
             it.isEnabled = false
             lifecycleScope.launch(Dispatchers.IO) {
@@ -517,7 +523,7 @@ class CameraFragment : Fragment() {
                         val canvas = Canvas(show)
                         val rect = RectF(0f,0f,l.toFloat(),l.toFloat())
                         canvas.drawBitmap(bitmap2,null,rect,null)
-                        fragmentCameraBinding.imageView?.setImageBitmap(show)
+                        fragmentCameraBinding.imageView.setImageBitmap(show)
                     }
                     val descriptor = SIFTUtils.computeDescriptors(result)
                     var max1 = 0.0
@@ -529,7 +535,7 @@ class CameraFragment : Fragment() {
                     Log.d("TAG", "Start Comparing")
                     var i =0
                     var cur = 0.0
-                    for ((key, value) in imgMap) {
+                    for ((key, value) in (activity as CameraActivity).imgMap) {
                         Log.d("TAG", "Comparing: ${key}")
                         cur = SIFTUtils.similarity(value, descriptor)
                         Log.d("TAG", "Res: ${cur}")
@@ -547,116 +553,222 @@ class CameraFragment : Fragment() {
                             maxId3 = key
                         }
                         withContext(Dispatchers.Main){
-                            fragmentCameraBinding.progressBar.progress = i*100/imgMap.size
+                            fragmentCameraBinding.progressBar.progress = i*100/(activity as CameraActivity).imgMap.size
                             i += 1
                         }
                     }
-                    if(cur==-1.0){
-                        withContext(Dispatchers.Main) {
-                            fragmentCameraBinding.textViewTitle?.text = "没有找到结果！"
-                            fragmentCameraBinding.textViewDs?.text = "nya~"
-                            fragmentCameraBinding.textViewVersion?.text = ""
-                        }
-                    }else{
-                    val maxJson1: JSONObject? = infoMap[maxId1]
-                    val maxJson2: JSONObject? = infoMap[maxId2]
-                    val maxJson3: JSONObject? = infoMap[maxId3]
-//                    Log.d("TAG", "View finder size: ${fragmentCameraBinding.viewFinder.width} x ${fragmentCameraBinding.viewFinder.height}")
-
-                    val padding = 6
-                    withContext(Dispatchers.Main){
-                        fragmentCameraBinding.imageShow1!!.setPadding(padding,padding,padding,padding)
-                        fragmentCameraBinding.imageShow2!!.setPadding(0,0,0,0)
-                        fragmentCameraBinding.imageShow3!!.setPadding(0,0,0,0)
-                        if (maxJson1 != null) {
-                            Log.d("TAG", maxJson1.toString())
-                            updateInfo(maxId1,maxJson1)
-                        }
-                        fragmentCameraBinding.imageShow1?.let { it1 -> updateImage(maxId1, it1,50) }
-                        fragmentCameraBinding.imageShow1?.setOnClickListener {
-                            fragmentCameraBinding.imageShow1!!.setPadding(padding,padding,padding,padding)
-                            fragmentCameraBinding.imageShow2!!.setPadding(0,0,0,0)
-                            fragmentCameraBinding.imageShow3!!.setPadding(0,0,0,0)
-//                            fragmentCameraBinding.textView?.text =
-//                                    "result1: ${maxId1},Name: ${maxJson1?.get("title")},Acc:${max1},Ds: ${maxJson1?.get("ds")}\n"
-                            if (maxJson1 != null) {
-                                updateInfo(maxId1,maxJson1)
-                            }
-
-                        }
-                        fragmentCameraBinding.imageShow2?.let { it2 -> updateImage(maxId2, it2,50) }
-                        fragmentCameraBinding.imageShow2?.setOnClickListener {
-                            fragmentCameraBinding.imageShow1!!.setPadding(0,0,0,0)
-                            fragmentCameraBinding.imageShow2!!.setPadding(padding,padding,padding,padding)
-                            fragmentCameraBinding.imageShow3!!.setPadding(0,0,0,0)
-//                            fragmentCameraBinding.textView?.text =
-//                                            "result2: ${maxId2},Name: ${maxJson2?.get("title")},Acc:${max2},Ds: ${maxJson2?.get("ds")}\n"
-                            if (maxJson2 != null) {
-                                updateInfo(maxId2,maxJson2)
-                            }
-
-                        }
-                        fragmentCameraBinding.imageShow3?.let { it3 -> updateImage(maxId3, it3,50) }
-                        fragmentCameraBinding.imageShow3?.setOnClickListener {
-                            fragmentCameraBinding.imageShow1!!.setPadding(0,0,0,0)
-                            fragmentCameraBinding.imageShow2!!.setPadding(0,0,0,0)
-                            fragmentCameraBinding.imageShow3!!.setPadding(padding,padding,padding,padding)
-//                            fragmentCameraBinding.textView?.text =
-//                                            "result3: ${maxId3},Name: ${maxJson3?.get("title")},Acc:${max3},Ds: ${maxJson3?.get("ds")}\n"
-                            if (maxJson3 != null) {
-                                updateInfo(maxId3,maxJson3)
-                            }
-
-                        }
-
+                    var test = mutableListOf<Int>()
+                    if(maxId1!=0){
+                        test.add(maxId1)
                     }
+                    if(maxId2!=0){
+                        test.add(maxId2)
                     }
+                    if(maxId3!=0){
+                        test.add(maxId3)
+                    }
+                    showResList(test,fragmentCameraBinding.resLayout)
+//                    if(cur==-1.0){
+//                        withContext(Dispatchers.Main) {
+//                            fragmentCameraBinding.textViewTitle?.text = "没有找到结果！"
+//                            fragmentCameraBinding.textViewDs?.text = "nya~"
+//                            fragmentCameraBinding.textViewVersion?.text = ""
+//                            val drawable = ContextCompat.getDrawable(
+//                                activity as CameraActivity,
+//                                R.drawable.def)
+//                            val drawable50 = ContextCompat.getDrawable(
+//                                activity as CameraActivity,
+//                                R.drawable.def_resize50)
+//                            fragmentCameraBinding.selectedImg?.setImageDrawable(drawable)
+//                            fragmentCameraBinding.imageShow1?.setImageDrawable(drawable50)
+//                            fragmentCameraBinding.imageShow2?.setImageDrawable(drawable50)
+//                            fragmentCameraBinding.imageShow3?.setImageDrawable(drawable50)
+//                        }
+//                    }else{
+//                    val maxJson1: JSONObject? = (activity as CameraActivity).infoMap[maxId1]
+//                    val maxJson2: JSONObject? = (activity as CameraActivity).infoMap[maxId2]
+//                    val maxJson3: JSONObject? = (activity as CameraActivity).infoMap[maxId3]
+////                    Log.d("TAG", "View finder size: ${fragmentCameraBinding.viewFinder.width} x ${fragmentCameraBinding.viewFinder.height}")
+//
+//                    val padding = dpToPx(3,requireContext())
+//                    withContext(Dispatchers.Main){
+//                        fragmentCameraBinding.imageShow1!!.setPadding(padding,padding,padding,padding)
+//                        fragmentCameraBinding.imageShow2!!.setPadding(0,0,0,0)
+//                        fragmentCameraBinding.imageShow3!!.setPadding(0,0,0,0)
+//                        if (maxJson1 != null) {
+//                            Log.d("TAG", maxJson1.toString())
+//                            updateInfo(maxId1,maxJson1)
+//                        }
+//                        fragmentCameraBinding.imageShow1?.let { it1 -> updateImage(maxId1, it1,50) }
+//                        fragmentCameraBinding.imageShow1?.setOnClickListener {
+//                            fragmentCameraBinding.imageShow1!!.setPadding(padding,padding,padding,padding)
+//                            fragmentCameraBinding.imageShow2!!.setPadding(0,0,0,0)
+//                            fragmentCameraBinding.imageShow3!!.setPadding(0,0,0,0)
+////                            fragmentCameraBinding.textView?.text =
+////                                    "result1: ${maxId1},Name: ${maxJson1?.get("title")},Acc:${max1},Ds: ${maxJson1?.get("ds")}\n"
+//                            if (maxJson1 != null) {
+//                                updateInfo(maxId1,maxJson1)
+//                            }
+//
+//                        }
+//                        fragmentCameraBinding.imageShow2?.let { it2 -> updateImage(maxId2, it2,50) }
+//                        fragmentCameraBinding.imageShow2?.setOnClickListener {
+//                            fragmentCameraBinding.imageShow1!!.setPadding(0,0,0,0)
+//                            fragmentCameraBinding.imageShow2!!.setPadding(padding,padding,padding,padding)
+//                            fragmentCameraBinding.imageShow3!!.setPadding(0,0,0,0)
+////                            fragmentCameraBinding.textView?.text =
+////                                            "result2: ${maxId2},Name: ${maxJson2?.get("title")},Acc:${max2},Ds: ${maxJson2?.get("ds")}\n"
+//                            if (maxJson2 != null) {
+//                                updateInfo(maxId2,maxJson2)
+//                            }
+//
+//                        }
+//                        fragmentCameraBinding.imageShow3?.let { it3 -> updateImage(maxId3, it3,50) }
+//                        fragmentCameraBinding.imageShow3?.setOnClickListener {
+//                            fragmentCameraBinding.imageShow1!!.setPadding(0,0,0,0)
+//                            fragmentCameraBinding.imageShow2!!.setPadding(0,0,0,0)
+//                            fragmentCameraBinding.imageShow3!!.setPadding(padding,padding,padding,padding)
+////                            fragmentCameraBinding.textView?.text =
+////                                            "result3: ${maxId3},Name: ${maxJson3?.get("title")},Acc:${max3},Ds: ${maxJson3?.get("ds")}\n"
+//                            if (maxJson3 != null) {
+//                                updateInfo(maxId3,maxJson3)
+//                            }
+//
+//                        }
+//
+//                    }
+//                    }
                     it.post { it.isEnabled = true }
                 }
             }
         }
 
-        // Listen to the capture button
-//        fragmentCameraBinding.captureButton.setOnClickListener {
-//
-//            // Disable click listener to prevent multiple requests simultaneously in flight
-//            it.isEnabled = false
-//
-//            // Perform I/O heavy operations in a different scope
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                takePhoto2().use { result ->{
-//                    Log.d(TAG, "Result received: $result")
-//                    Log.d(TAG, "Plane Size: ${result.image.planes.size}")
-//                }
-//                    // Save the result to disk
-////                    val output = saveResult(result)
-////                    Log.d(TAG, "Image saved: ${output.absolutePath}")
-////
-////                    // If the result is a JPEG file, update EXIF metadata with orientation info
-////                    if (output.extension == "jpg") {
-////                        val exif = ExifInterface(output.absolutePath)
-////                        exif.setAttribute(
-////                                ExifInterface.TAG_ORIENTATION, result.orientation.toString())
-////                        exif.saveAttributes()
-////                        Log.d(TAG, "EXIF metadata saved: ${output.absolutePath}")
-////                    }
-////
-////                    // Display the photo taken to user
-////                    lifecycleScope.launch(Dispatchers.Main) {
-////                        navController.navigate(CameraFragmentDirections
-////                                .actionCameraToJpegViewer(output.absolutePath)
-////                                .setOrientation(result.orientation)
-////                                .setDepth(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-////                                        result.format == ImageFormat.DEPTH_JPEG))
-////                    }
-//                }
-//
-//                // Re-enable click listener after photo is taken
-//                it.post { it.isEnabled = true }
-//            }
-//        }
     }
+    fun dpToPx(dp: Int, context: Context): Int {
+        val density = context.resources.displayMetrics.density
+        return Math.round(dp.toFloat() * density)
+    }
+    fun showResList(resList:MutableList<Int>,resLayout: LinearLayout){
+        lifecycleScope.launch(Dispatchers.IO) {
+            if(resList.isEmpty()){
+                withContext(Dispatchers.Main) {
+                    resLayout.removeAllViews()
+                    fragmentCameraBinding.textViewTitle.text = "没有找到结果！"
+                    fragmentCameraBinding.textViewDs.text = "nya~"
+                    fragmentCameraBinding.textViewVersion.text = ""
+                    val drawable = ContextCompat.getDrawable(
+                        activity as CameraActivity,
+                        com.example.android.camera2.basic.R.drawable.def)
+                    fragmentCameraBinding.selectedImg.setImageDrawable(drawable)
+                }
+            }else{
+                withContext(Dispatchers.Main) {
+                    var imgList = mutableListOf<ImageView>()
+                    resLayout.removeAllViews()
+                    for (id in resList) {
+                        val json: JSONObject? = (activity as CameraActivity).infoMap[id]
+                        var jsonArray: JSONArray? = null
+                        if((activity as CameraActivity).chartMap.contains(id)){
+                            jsonArray = (activity as CameraActivity).chartMap[id]
+                        }
+                        var img: ImageView = ImageView(requireContext())
+                        val params: ViewGroup.MarginLayoutParams = ViewGroup.MarginLayoutParams(50,50)
+                        with(params) {
+                            height = dpToPx(50,requireContext())
+                            width = dpToPx(50,requireContext())
+                            leftMargin = dpToPx(5,requireContext())
+                            rightMargin = dpToPx(5,requireContext())
+                        }
+                        img.layoutParams = params
+                        val yellow = ContextCompat.getDrawable(
+                            activity as CameraActivity,
+                            R.drawable.bg_border1
+                        )
+                        img.background = yellow
+                        val padding = dpToPx(3,requireContext())
+                        img.setPadding(padding,padding,padding,padding)
+                        img.let { it1 -> updateImage(id, it1, 50) }
+                        img.setOnClickListener {
+                            for(v in imgList){
+                                v.setPadding(0,0,0,0)
+                            }
+                            img.setPadding(padding,padding,padding,padding)
+                            if (json != null) {
+                                updateInfo(id,json,jsonArray)
+                            }
+                        }
+                        imgList.add(img)
+                        resLayout.addView(img)
+                    }
+                    for(v in imgList){
+                        v.setPadding(0,0,0,0)
+                    }
+                    val padding = dpToPx(3,requireContext())
+                    imgList[0].setPadding(padding,padding,padding,padding)
+                    val json: JSONObject? = (activity as CameraActivity).infoMap[resList[0]]
+                    var jsonArray: JSONArray? = null
+                    if((activity as CameraActivity).chartMap.contains(resList[0])){
+                        jsonArray = (activity as CameraActivity).chartMap[resList[0]]
+                    }
+                    if(json!=null){
+                        updateInfo(resList[0],json,jsonArray)
+                    }
+                }
 
+//                    val maxJson2: JSONObject? = (activity as CameraActivity).infoMap[maxId2]
+//                    val maxJson3: JSONObject? = (activity as CameraActivity).infoMap[maxId3]
+////                    Log.d("TAG", "View finder size: ${fragmentCameraBinding.viewFinder.width} x ${fragmentCameraBinding.viewFinder.height}")
+//
+//                    val padding = 6
+//                    withContext(Dispatchers.Main){
+//                        fragmentGalleryBinding.imageShow1.setPadding(padding,padding,padding,padding)
+//                        fragmentGalleryBinding.imageShow2.setPadding(0,0,0,0)
+//                        fragmentGalleryBinding.imageShow3.setPadding(0,0,0,0)
+//                        if (maxJson1 != null) {
+//                            Log.d("TAG", maxJson1.toString())
+//                            updateInfo(maxId1,maxJson1)
+//                        }
+//                        fragmentGalleryBinding.imageShow1.let { it1 -> updateImage(maxId1, it1,50) }
+//                        fragmentGalleryBinding.imageShow1.setOnClickListener {
+//                            fragmentGalleryBinding.imageShow1.setPadding(padding,padding,padding,padding)
+//                            fragmentGalleryBinding.imageShow2.setPadding(0,0,0,0)
+//                            fragmentGalleryBinding.imageShow3.setPadding(0,0,0,0)
+////                            fragmentCameraBinding.textView?.text =
+////                                    "result1: ${maxId1},Name: ${maxJson1?.get("title")},Acc:${max1},Ds: ${maxJson1?.get("ds")}\n"
+//                            if (maxJson1 != null) {
+//                                updateInfo(maxId1,maxJson1)
+//                            }
+//
+//                        }
+//                        fragmentGalleryBinding.imageShow2.let { it2 -> updateImage(maxId2, it2,50) }
+//                        fragmentGalleryBinding.imageShow2.setOnClickListener {
+//                            fragmentGalleryBinding.imageShow1.setPadding(0,0,0,0)
+//                            fragmentGalleryBinding.imageShow2.setPadding(padding,padding,padding,padding)
+//                            fragmentGalleryBinding.imageShow3.setPadding(0,0,0,0)
+////                            fragmentCameraBinding.textView?.text =
+////                                            "result2: ${maxId2},Name: ${maxJson2?.get("title")},Acc:${max2},Ds: ${maxJson2?.get("ds")}\n"
+//                            if (maxJson2 != null) {
+//                                updateInfo(maxId2,maxJson2)
+//                            }
+//
+//                        }
+//                        fragmentGalleryBinding.imageShow3.let { it3 -> updateImage(maxId3, it3,50) }
+//                        fragmentGalleryBinding.imageShow3.setOnClickListener {
+//                            fragmentGalleryBinding.imageShow1.setPadding(0,0,0,0)
+//                            fragmentGalleryBinding.imageShow2.setPadding(0,0,0,0)
+//                            fragmentGalleryBinding.imageShow3.setPadding(padding,padding,padding,padding)
+////                            fragmentCameraBinding.textView?.text =
+////                                            "result3: ${maxId3},Name: ${maxJson3?.get("title")},Acc:${max3},Ds: ${maxJson3?.get("ds")}\n"
+//                            if (maxJson3 != null) {
+//                                updateInfo(maxId3,maxJson3)
+//                            }
+//
+//                        }
+//
+//                    }
+            }
+        }
+    }
     private fun getHashList(result: Bitmap, width: Int): FloatArray {
         var hashList: FloatArray = FloatArray(width*width)
 //        var max = Float.MIN_VALUE
@@ -759,7 +871,6 @@ class CameraFragment : Fragment() {
      * template. It performs synchronization between the [CaptureResult] and the [Image] resulting
      * from the single capture, and outputs a [CombinedCaptureResult] object.
      */
-
 
     private suspend fun takePhoto2():
             CombinedCaptureResult = suspendCoroutine { cont ->
@@ -896,6 +1007,7 @@ class CameraFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        camera.close()
         cameraThread.quitSafely()
         imageReaderThread.quitSafely()
     }

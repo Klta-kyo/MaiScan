@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2020 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal">-->
+
+<!--                <Button-->
+<!--                    android:id="@+id/btn_frag_camera"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:onClick="changeFrag_cam"-->
+<!--                    android:text="相机"-->
+<!--                    android:textColor="@android:color/black"-->
+<!--                    tools:ignore="UsingOnClickInXml" />-->
+
+<!--                <Button-->
+<!--                    android:id="@+id/btn_frag_gallery"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:onClick="changeFrag_gallery"-->
+<!--                    android:text="图片"-->
+<!--                    android:textColor="@android:color/black"-->
+<!--                    tools:ignore="UsingOnClickInXml" />-->
+<!--                <Button-->
+<!--                    android:id="@+id/btn_frag_text"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:onClick="changeFrag_text"-->
+<!--                    android:text="文字"-->
+<!--                    tools:ignore="UsingOnClickInXml"-->
+<!--                    android:textColor="@android:color/black" />-->
+<!--            </LinearLayout>-->
+            <include
+                layout="@layout/navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_launcher" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="MaiScan Version0.2.0_20240130"
+                    android:textColor="@android:color/black"
+                    android:textSize="24sp" />
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="开发者：bilibili@Klta_卡"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="开源地址：github.com/Klta-kyo/MaiScan"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="感谢使用！欢迎建议~"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="别名数据（离线）：github@Yuri-YuzuChaN"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="配置数据（离线）：bilibili搜索 感谢各位手元大佬！"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="拟合定数数据（离线）：github@Diving-Fish"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="\n\n小小打个广告：\n淘宝搜索：Klta的小店 或淘宝扫描二维码支持开发者~"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp" />
+
+                <HorizontalScrollView
+                    android:id="@+id/hori"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/imageViewr1"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+
+                        <ImageView
+                            android:id="@+id/imageViews1"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+
+                        <ImageView
+                            android:id="@+id/imageViewsa1"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+
+                        <ImageView
+                            android:id="@+id/imageViewr2"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+
+                        <ImageView
+                            android:id="@+id/imageViews2"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+
+                        <ImageView
+                            android:id="@+id/imageViewsa2"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+
+                        <ImageView
+                            android:id="@+id/imageViewr3"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+
+                        <ImageView
+                            android:id="@+id/imageViews3"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+
+                        <ImageView
+                            android:id="@+id/imageViewsa3"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:layout_weight="1"
+                            tools:srcCompat="@drawable/def" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <ImageView
+                    android:id="@+id/imageView_taobao"
+                    android:layout_width="match_parent"
+                    android:layout_height="121dp"
+                    tools:srcCompat="@drawable/def" />
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+
+</FrameLayout>

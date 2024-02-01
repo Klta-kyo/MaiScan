@@ -9,7 +9,7 @@ import org.opencv.core.MatOfDMatch
 import org.opencv.core.MatOfKeyPoint
 import org.opencv.features2d.DescriptorMatcher
 import org.opencv.features2d.SIFT
-import java.lang.Exception
+import kotlin.Exception
 
 object SIFTUtils {
     // SIFT detector
@@ -58,11 +58,10 @@ object SIFTUtils {
     //        if (bitmap1.byteCount > bitmap2.byteCount) {
 
             Log.d("TAG", "${descriptors2.size().height},${descriptors2.size().width}")
-            if(descriptors2.size().height==0.0){
+            if(descriptors2.size().height==0.0||descriptors2.size().width==0.0){
                 return -1.0
             }
             descriptorMatcher.knnMatch(descriptors1, descriptors2, matches, 2)
-
     //        } else {
     //            descriptorMatcher.knnMatch(descriptors2, descriptors1, matches, 2)
     //        }
