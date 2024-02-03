@@ -1,0 +1,6 @@
+utils/
+# Project exclude paths
+/.gradle/
+/app/build/
+/app/src/main/assets/source_resize50/
+/build/

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../../../app/src/main" dumb="true">
+      <excludeFolder url="file://$MODULE_DIR$/../../../app/src/main/assets/source" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../app/src/main/assets/source_resize50" />
+    </content>
+  </component>
+</module>
