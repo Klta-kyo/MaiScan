@@ -33,5 +33,4 @@ google-services.json
 *.hprof
 
 # Custom Files
-utils/
 app/build/
